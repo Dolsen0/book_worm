@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, FlatList, TouchableOpacity, Image , ScrollView } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 function BookItem({ item, onSelect }) {
   return (
@@ -9,7 +11,7 @@ function BookItem({ item, onSelect }) {
   );
 }
 
-export default function App() {
+function SearchScreen({ navigation }) {
   const [books, setBooks] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -22,7 +24,7 @@ export default function App() {
   }
 
   function selectBook(book) {
-    console.log(book);
+    navigation.navigate('Details', { book });
   }
 
   return (
@@ -43,6 +45,37 @@ export default function App() {
         />
       </View>
     </View>
+  );
+}
+
+function DetailsScreen({ route }) {
+  const { book } = route.params;
+
+  const imageUrl = book.volumeInfo.imageLinks?.thumbnail;
+  const authors = book.volumeInfo.authors?.join(', ');
+  const description = book.volumeInfo.description;
+
+  return (
+    <ScrollView style={styles.detailsContainer}>
+      <Text style={styles.title}>{book.volumeInfo.title}</Text>
+      {imageUrl && <Image style={styles.image} source={{ uri: imageUrl }} resizeMode="contain" />}
+      <Text style={styles.authors}>{authors}</Text>
+      <Text style={styles.description}>{description}</Text>
+    </ScrollView>
+  );
+}
+
+
+const Stack = createStackNavigator();
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Search">
+        <Stack.Screen name="Search" component={SearchScreen} />
+        <Stack.Screen name="Details" component={DetailsScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
@@ -84,5 +117,42 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 18,
+  },
+  image: {
+    height: 200,
+    marginVertical: 10,
+  },
+  authors: {
+    fontSize: 20,
+    marginVertical: 10,
+  },
+  description: {
+    fontSize: 16,
+  },
+  detailsContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 20,
+    paddingBottom: 50,
+  },
+  detailsTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#333',
+  },
+  detailsImage: {
+    height: 200,
+    alignSelf: 'center',
+    marginBottom: 20,
+  },
+  detailsAuthors: {
+    fontSize: 20,
+    marginBottom: 20,
+    color: '#666',
+  },
+  detailsDescription: {
+    fontSize: 16,
+    color: '#444',
   },
 });
