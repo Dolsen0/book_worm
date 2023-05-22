@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, FlatList, TouchableOpacity, Image , ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Button, FlatList, TouchableOpacity, Image , ScrollView, Linking } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
@@ -54,13 +54,24 @@ function DetailsScreen({ route }) {
   const imageUrl = book.volumeInfo.imageLinks?.thumbnail;
   const authors = book.volumeInfo.authors?.join(', ');
   const description = book.volumeInfo.description;
+  const pageCount = book.volumeInfo.pageCount;
+  const averageRating = book.volumeInfo.averageRating;
+  const ratingsCount = book.volumeInfo.ratingsCount;
+  const previewLink = book.volumeInfo.previewLink;
+  const saleInfo = book.saleInfo?.saleability;
+
 
   return (
     <ScrollView style={styles.detailsContainer}>
       <Text style={styles.title}>{book.volumeInfo.title}</Text>
       {imageUrl && <Image style={styles.image} source={{ uri: imageUrl }} resizeMode="contain" />}
       <Text style={styles.authors}>{authors}</Text>
+      <Text style={styles.pageCount}>Page Count: {pageCount}</Text>
+      <Text style={styles.ratingInfo}>Average Rating: {averageRating}, Ratings: {ratingsCount}</Text>
       <Text style={styles.description}>{description}</Text>
+      <View style={styles.previewLinkContainer}>
+        <Text style={styles.previewLink}>Preview: <Text style={styles.link} onPress={() => Linking.openURL(previewLink)}>Click Here</Text></Text>
+      </View>
     </ScrollView>
   );
 }
@@ -71,8 +82,8 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Search">
-        <Stack.Screen name="Search" component={SearchScreen} />
+      <Stack.Navigator initialRouteName="BookWorm">
+        <Stack.Screen name="Book Worm" component={SearchScreen} />
         <Stack.Screen name="Details" component={DetailsScreen} />
       </Stack.Navigator>
     </NavigationContainer>
@@ -154,5 +165,46 @@ const styles = StyleSheet.create({
   detailsDescription: {
     fontSize: 16,
     color: '#444',
+  },
+  publishInfo: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: '#666',
+  },
+  ratingInfo: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: '#666',
+  },
+  saleInfo: {
+    fontSize: 16,
+    marginBottom: 10,
+    color: '#666',
+  },
+  link: {
+    color: 'blue',
+  },
+  detailsContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+    padding: 20,
+  },
+  
+  previewLinkContainer: {
+    marginTop: 20,
+    marginBottom: 50,  // add this line
+    padding: 10,
+    backgroundColor: '#48BBEC',
+    borderRadius: 5,
+    alignSelf: 'center',
+  },
+  previewLink: {
+    fontSize: 18,
+    color: '#ffffff',
+    textAlign: 'center',
+  },
+  link: {
+    color: '#ffffff',
+    textDecorationLine: 'underline',
   },
 });
